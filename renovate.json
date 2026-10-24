@@ -14,7 +14,24 @@
     "description": "The default pattern misses requirements-ha-test.txt, which has two parts after requirements.",
     "managerFilePatterns": ["/(^|/)requirements(-[\\w-]+)?\\.txt$/"]
   },
+  "customDatasources": {
+    "homeassistant-python": {
+      "defaultRegistryUrlTemplate": "https://pypi.org/pypi/homeassistant/json",
+      "transformTemplates": [
+        "{\"releases\": [{\"version\": $substringAfter(info.requires_python, \">=\")}]}"
+      ]
+    }
+  },
   "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Minimum Python version of the latest Home Assistant release, from requires_python on PyPI. A new minor version is the reminder to move Python, see Dependency updates in docs/development.md.",
+      "managerFilePatterns": ["/^docs/development\\.md$/"],
+      "matchStrings": ["Needs Python (?<currentValue>\\d+\\.\\d+(\\.\\d+)?) or newer"],
+      "depNameTemplate": "homeassistant-python",
+      "datasourceTemplate": "custom.homeassistant-python",
+      "versioningTemplate": "pep440"
+    },
     {
       "customType": "regex",
       "description": "Commit of the upstream ESPHome project this integration was last compared with, see Upstream changes in docs/development.md. git-refs reads the branch head with git ls-remote.",
@@ -47,10 +64,16 @@
       "dependencyDashboardApproval": true
     },
     {
-      "description": "Python minors are runtime changes and need approval too.",
+      "description": "Python follows Home Assistant, so only patches of its minor version are proposed. The pull request for homeassistant-python is the reminder to raise the limit, see Dependency updates in docs/development.md.",
       "matchDepNames": ["python"],
-      "matchUpdateTypes": ["minor"],
-      "dependencyDashboardApproval": true
+      "allowedVersions": "<3.15"
+    },
+    {
+      "matchDepNames": ["homeassistant-python"],
+      "commitMessageTopic": "Python required by Home Assistant",
+      "prBodyNotes": [
+        "Follow `Dependency updates` in `docs/development.md`: for a new minor version, move Python to it in this pull request; otherwise merge it as is."
+      ]
     },
     {
       "description": "Home Assistant uses calendar versions, so the first release of a year is a major update without being a breaking one. Every stable release of the Home Assistant tests is proposed without approval, see Home Assistant tests in docs/development.md.",
