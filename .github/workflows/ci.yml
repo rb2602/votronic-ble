@@ -29,7 +29,7 @@ env:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -42,7 +42,7 @@ jobs:
       - run: python -m unittest -v
 
   lint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -63,7 +63,7 @@ jobs:
   # version requirements-ha-test.txt pins. The requirements of its Bluetooth
   # integration come from its manifests.
   ha-test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     strategy:
       fail-fast: false
@@ -100,7 +100,7 @@ jobs:
   # commits, so a secret in an old commit fails the run too. The same tool
   # runs on staged changes before every commit, see .pre-commit-config.yaml.
   secrets:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -118,7 +118,7 @@ jobs:
           args: git --no-banner --redact --verbose .
 
   hassfest:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -129,7 +129,7 @@ jobs:
   # Validates the repository as HACS does, through the GitHub API; it needs
   # no checkout.
   hacs:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 15
     steps:
       - uses: hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa # main
