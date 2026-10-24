@@ -91,7 +91,13 @@ Renovate, configured in `renovate.json`:
 
 - New pull requests open on Saturdays; others wait in the
   `Dependency Dashboard` issue.
-- Major updates and Python minor updates need a tick in the dashboard.
+- Major updates need a tick in the dashboard.
+- Python follows Home Assistant: only patches of the minor version in
+  `ci.yml` come. When the latest Home Assistant release raises its minimum
+  Python version, a pull request updates `Needs Python … or newer` above. For
+  a new minor version, add to it the latest patch in `python-version` in
+  `ci.yml`, the next minor in `allowedVersions` of `python` in `renovate.json`
+  and the new `target-version` in `pyproject.toml`.
 - Every stable Home Assistant release comes as a pull request; its CI run
   is the test.
 - Tools pinned in two places come in one pull request.
