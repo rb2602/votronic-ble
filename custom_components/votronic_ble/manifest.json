@@ -1,0 +1,28 @@
+{
+  "domain": "votronic_ble",
+  "name": "Votronic Bluetooth",
+  "bluetooth": [
+    {
+      "local_name": "Votronic*"
+    },
+    {
+      "local_name": "votronic*"
+    },
+    {
+      "service_uuid": "d0cb6aa7-8548-46d0-99f8-2d02611e5270"
+    }
+  ],
+  "codeowners": [
+    "@rb2602"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "bluetooth_adapters"
+  ],
+  "documentation": "https://github.com/rb2602/votronic-ble",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/rb2602/votronic-ble/issues",
+  "requirements": [],
+  "version": "0.1.0"
+}

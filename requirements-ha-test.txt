@@ -1,0 +1,8 @@
+# Home Assistant tests in tests/ha, see "Home Assistant tests" in
+# docs/development.md. Only Home Assistant is pinned: pip picks the
+# pytest-homeassistant-custom-component release made for exactly this
+# version, and Renovate proposes every stable Home Assistant release. The
+# plugin stays unpinned on purpose: its releases for betas look like
+# ordinary versions, so Renovate would propose them.
+homeassistant==2026.9.4
+pytest-homeassistant-custom-component

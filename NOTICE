@@ -1,0 +1,13 @@
+Votronic Bluetooth for Home Assistant
+Copyright 2026 rb2602
+
+The BLE frame parsing in custom_components/votronic_ble/parser.py and the
+BLE UUIDs in custom_components/votronic_ble/const.py are derived from the
+votronic_ble component of syssi/esphome-votronic
+(https://github.com/syssi/esphome-votronic), licensed under the
+Apache License, Version 2.0.
+
+Votronic is a trademark of Votronic Electronic-Systeme GmbH & Co. KG.
+This project is not affiliated with or endorsed by Votronic. The logo in
+custom_components/votronic_ble/brand is used solely to identify the
+supported hardware.

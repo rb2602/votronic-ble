@@ -1,0 +1,6 @@
+# Python tools used by CI and the local checks, see docs/development.md.
+# Pinned to exact versions, see "Pinned tool versions" in
+# docs/development.md; Renovate proposes upgrades. Ruff must match the
+# ruff-pre-commit rev in .pre-commit-config.yaml.
+ruff==0.16.10
+pyyaml==6.0.3

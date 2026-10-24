@@ -1,0 +1,70 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "configMigration": true,
+  "timezone": "Europe/Zurich",
+  "schedule": ["on saturday"],
+  "prHourlyLimit": 0,
+  "osvVulnerabilityAlerts": true,
+  "labels": ["dependencies"],
+  "pre-commit": {
+    "enabled": true
+  },
+  "pip_requirements": {
+    "description": "The default pattern misses requirements-ha-test.txt, which has two parts after requirements.",
+    "managerFilePatterns": ["/(^|/)requirements(-[\\w-]+)?\\.txt$/"]
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Commit of the upstream ESPHome project this integration was last compared with, see Upstream changes in docs/development.md. git-refs reads the branch head with git ls-remote.",
+      "managerFilePatterns": ["/^docs/development\\.md$/"],
+      "matchStrings": ["Last reviewed upstream commit: `(?<currentDigest>[0-9a-f]{40})`"],
+      "depNameTemplate": "syssi/esphome-votronic",
+      "packageNameTemplate": "https://github.com/syssi/esphome-votronic",
+      "currentValueTemplate": "main",
+      "datasourceTemplate": "git-refs"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Tools pinned for CI and in .pre-commit-config.yaml move in one pull request so hook and CI cannot disagree, see docs/development.md.",
+      "groupName": "Ruff",
+      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"]
+    },
+    {
+      "groupName": "gitleaks",
+      "matchPackageNames": ["zricethezav/gitleaks", "gitleaks/gitleaks"]
+    },
+    {
+      "description": "New releases wait three days, so a compromised or withdrawn release is not proposed at once; security pull requests do not wait. Not for the hassfest and HACS actions (github-digest), so new validation rules arrive at once, nor for the upstream commits (git-refs), which have no release dates and would wait forever.",
+      "matchDatasources": ["docker", "github-releases", "github-tags", "pypi"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Major updates only after approval in the Dependency Dashboard issue.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Python minors are runtime changes and need approval too.",
+      "matchDepNames": ["python"],
+      "matchUpdateTypes": ["minor"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Home Assistant uses calendar versions, so the first release of a year is a major update without being a breaking one. Every stable release of the Home Assistant tests is proposed without approval, see Home Assistant tests in docs/development.md.",
+      "matchPackageNames": ["homeassistant"],
+      "dependencyDashboardApproval": false
+    },
+    {
+      "description": "New upstream commits are a review task, not a pin bump: the pull request is the reminder to compare components/votronic_ble and transfer the changes, see Upstream changes in docs/development.md. Matched by depName because the custom manager sets the package name to the GitHub URL.",
+      "matchDepNames": ["syssi/esphome-votronic"],
+      "commitMessageTopic": "upstream {{depName}}",
+      "prBodyNotes": [
+        "Upstream changes to review: https://github.com/syssi/esphome-votronic/compare/{{currentDigest}}...{{newDigest}}",
+        "Follow `Upstream changes` in `docs/development.md`: transfer the changes to this pull request, or merge it as is when the commits do not touch `components/votronic_ble`."
+      ]
+    }
+  ]
+}

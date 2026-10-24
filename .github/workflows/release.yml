@@ -1,0 +1,96 @@
+# Creates the GitHub release for a pushed tag vX.Y.Z with the tag message as
+# release notes. HACS offers releases, not tags. See "Releases" in
+# docs/development.md.
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions: {}
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      # Reads the CI runs of the tagged commit.
+      actions: read
+      # Creates the release.
+      contents: write
+    steps:
+      # A tag on a feature branch must not become a release.
+      - name: Check that the tag is on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          status=$(gh api "repos/$GITHUB_REPOSITORY/compare/main...$TAG" --jq .status)
+          if [ "$status" != identical ] && [ "$status" != behind ]; then
+            echo "::error::$TAG points to a commit that is not on main"
+            exit 1
+          fi
+      # Only an annotated tag with a signature that GitHub verifies against a
+      # key of the tagger's account becomes a release.
+      - name: Check the tag signature
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          ref=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" --jq '"\(.object.type) \(.object.sha)"')
+          if [ "${ref% *}" != tag ]; then
+            echo "::error::$TAG is a lightweight tag; release tags are annotated and signed"
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/git/tags/${ref#* }" > "$RUNNER_TEMP/tag.json"
+          if [ "$(jq -r .verification.verified "$RUNNER_TEMP/tag.json")" != true ]; then
+            echo "::error::GitHub does not verify the signature of $TAG: $(jq -r .verification.reason "$RUNNER_TEMP/tag.json")"
+            exit 1
+          fi
+      # A tag pushed right after the merge must not be released before CI
+      # of its commit has passed.
+      - name: Wait for CI of the tagged commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
+          while :; do
+            run=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?head_sha=$sha&per_page=1" \
+              --jq '.workflow_runs[0] | "\(.status) \(.conclusion)"')
+            case "$run" in
+              "completed success") break ;;
+              completed*)
+                echo "::error::CI of $sha did not pass: $run"
+                exit 1
+                ;;
+              *)
+                echo "CI of $sha: $run, waiting"
+                sleep 30
+                ;;
+            esac
+          done
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check the tag against the manifest version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version=$(python3 -c 'import json; print(json.load(open("custom_components/votronic_ble/manifest.json"))["version"])')
+          if [ "v$version" != "$TAG" ]; then
+            echo "::error::manifest.json has version $version, the tag is $TAG"
+            exit 1
+          fi
+      # The tag message comes from the API, see "Check the tag signature":
+      # actions/checkout turns an annotated tag into a lightweight one in the
+      # local clone. The message ends with the signature, which is cut off.
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          jq -r .message "$RUNNER_TEMP/tag.json" \
+            | sed -E '/^-----BEGIN (PGP|SSH) SIGNATURE-----$/,$d' > "$RUNNER_TEMP/notes.md"
+          gh release create "$TAG" --verify-tag --title "$TAG" --notes-file "$RUNNER_TEMP/notes.md"

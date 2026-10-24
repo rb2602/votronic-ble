@@ -1,0 +1,110 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Votronic Bluetooth Connector auswählen",
+        "description": "Schalte den Votronic Bluetooth Connector ein und warte, bis er in der Liste erscheint.",
+        "data": {
+          "address": "Gerät"
+        }
+      },
+      "pair": {
+        "title": "Votronic Bluetooth Connector koppeln",
+        "description": "Drücke kurz die Taste Key am Votronic Bluetooth Connector. Die gelbe und die grüne LED blinken danach bis zu 3 Minuten abwechselnd; bestätige innerhalb dieser Zeit. Blinken sie nicht abwechselnd, halte die Taste 3 Sekunden gedrückt, um alle Kopplungen zu löschen, auch die mit Smartphones und Tablets, und drücke sie danach nochmals kurz."
+      },
+      "pairing_code": {
+        "title": "Pairing-Code eingeben",
+        "description": "Der Bluetooth Connector hat den Standard-Pairing-Code 173928 nicht akzeptiert, es ist also ein eigener Pairing-Code gesetzt. Gib ihn ein und bestätige, solange die LEDs abwechselnd blinken; haben sie damit aufgehört, drücke die Taste Key nochmals kurz.",
+        "data": {
+          "pairing_code": "Pairing-Code"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung oder Kopplung fehlgeschlagen. Stelle sicher, dass der Bluetooth Connector in Reichweite ist, und versuche es nochmals.",
+      "local_adapter_required": "Die Verbindung läuft über einen Bluetooth-Proxy. Das wird nicht unterstützt. Home Assistant muss den Bluetooth Connector mit dem eigenen Bluetooth-Adapter erreichen.",
+      "no_devices_found": "Kein Votronic Bluetooth Connector gefunden. Stelle sicher, dass Bluetooth in Home Assistant eingerichtet ist und das Gerät in Reichweite ist.",
+      "unsupported_device": "Das Gerät wurde gefunden, bietet aber nicht die erwarteten Votronic-Monitoring-Characteristics an.",
+      "pairing_not_accepted": "Der Bluetooth Connector ist nicht im Kopplungsmodus. Drücke kurz die Taste Key, bis die gelbe und die grüne LED abwechselnd blinken, und bestätige innerhalb von 3 Minuten.",
+      "wrong_pairing_code": "Der Bluetooth Connector hat den Pairing-Code abgelehnt. Prüfe den Code und versuche es nochmals, solange die LEDs abwechselnd blinken.",
+      "invalid_pairing_code": "Gib die sechs Ziffern des Pairing-Codes ein."
+    },
+    "abort": {
+      "already_configured": "Dieses Votronic-Gerät ist bereits konfiguriert.",
+      "not_supported": "Dieses Bluetooth-Gerät ist kein unterstütztes Votronic-Gerät."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_voltage": {
+        "name": "Batteriespannung"
+      },
+      "secondary_battery_voltage": {
+        "name": "Spannung Zweitbatterie"
+      },
+      "battery_capacity_remaining": {
+        "name": "Restkapazität Batterie"
+      },
+      "state_of_charge": {
+        "name": "Ladezustand"
+      },
+      "current": {
+        "name": "Strom"
+      },
+      "power": {
+        "name": "Leistung"
+      },
+      "battery_nominal_capacity": {
+        "name": "Nennkapazität Batterie"
+      },
+      "pv_voltage": {
+        "name": "PV-Spannung"
+      },
+      "pv_current": {
+        "name": "PV-Strom"
+      },
+      "pv_controller_temperature": {
+        "name": "PV-Regler-Temperatur"
+      },
+      "pv_power": {
+        "name": "PV-Leistung"
+      },
+      "battery_status_bitmask": {
+        "name": "Batteriestatus-Bitmaske"
+      },
+      "battery_status": {
+        "name": "Batteriestatus"
+      },
+      "pv_controller_status_bitmask": {
+        "name": "PV-Regler-Status-Bitmaske"
+      },
+      "pv_controller_status": {
+        "name": "PV-Regler-Status"
+      },
+      "charged_capacity": {
+        "name": "Geladene Kapazität"
+      },
+      "charged_energy": {
+        "name": "Geladene Energie"
+      }
+    },
+    "binary_sensor": {
+      "charging": {
+        "name": "Laden"
+      },
+      "discharging": {
+        "name": "Entladen"
+      },
+      "controller_active": {
+        "name": "Regler aktiv"
+      },
+      "current_reduction": {
+        "name": "Stromreduzierung"
+      },
+      "aes_active": {
+        "name": "AES aktiv"
+      }
+    }
+  }
+}

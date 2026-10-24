@@ -1,0 +1,110 @@
+{
+  "config": {
+    "flow_title": "{name}",
+    "step": {
+      "user": {
+        "title": "Select Votronic Bluetooth Connector",
+        "description": "Power on the Votronic Bluetooth Connector and wait until it appears in the list.",
+        "data": {
+          "address": "Device"
+        }
+      },
+      "pair": {
+        "title": "Pair Votronic Bluetooth Connector",
+        "description": "Briefly press the Key button on the Votronic Bluetooth Connector. The yellow and green LEDs then blink alternately for up to 3 minutes; confirm within that time. If they do not start blinking alternately, hold the button for 3 seconds to delete all pairings, including those with phones and tablets, then press it briefly again."
+      },
+      "pairing_code": {
+        "title": "Enter pairing code",
+        "description": "The Bluetooth Connector did not accept the default pairing code 173928, so a user pairing code is set. Enter it and confirm while the LEDs blink alternately; if they stopped, briefly press the Key button again.",
+        "data": {
+          "pairing_code": "Pairing code"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Connection or pairing failed. Make sure the Bluetooth Connector is in range and retry.",
+      "local_adapter_required": "The connection runs through a Bluetooth proxy. This is not supported. Home Assistant must reach the Bluetooth Connector with its own Bluetooth adapter.",
+      "no_devices_found": "No Votronic Bluetooth Connector found. Make sure Bluetooth is set up in Home Assistant and the device is in range.",
+      "unsupported_device": "The device was found but does not expose the expected Votronic monitoring characteristics.",
+      "pairing_not_accepted": "The Bluetooth Connector is not in pairing mode. Briefly press the Key button until the yellow and green LEDs blink alternately, then confirm within 3 minutes.",
+      "wrong_pairing_code": "The Bluetooth Connector rejected the pairing code. Check the code and retry while the LEDs blink alternately.",
+      "invalid_pairing_code": "Enter the six digits of the pairing code."
+    },
+    "abort": {
+      "already_configured": "This Votronic device is already configured.",
+      "not_supported": "This Bluetooth device is not a supported Votronic device."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "battery_voltage": {
+        "name": "Battery voltage"
+      },
+      "secondary_battery_voltage": {
+        "name": "Secondary battery voltage"
+      },
+      "battery_capacity_remaining": {
+        "name": "Remaining battery capacity"
+      },
+      "state_of_charge": {
+        "name": "State of charge"
+      },
+      "current": {
+        "name": "Current"
+      },
+      "power": {
+        "name": "Power"
+      },
+      "battery_nominal_capacity": {
+        "name": "Battery nominal capacity"
+      },
+      "pv_voltage": {
+        "name": "PV voltage"
+      },
+      "pv_current": {
+        "name": "PV current"
+      },
+      "pv_controller_temperature": {
+        "name": "PV controller temperature"
+      },
+      "pv_power": {
+        "name": "PV power"
+      },
+      "battery_status_bitmask": {
+        "name": "Battery status bitmask"
+      },
+      "battery_status": {
+        "name": "Battery status"
+      },
+      "pv_controller_status_bitmask": {
+        "name": "PV controller status bitmask"
+      },
+      "pv_controller_status": {
+        "name": "PV controller status"
+      },
+      "charged_capacity": {
+        "name": "Charged capacity"
+      },
+      "charged_energy": {
+        "name": "Charged energy"
+      }
+    },
+    "binary_sensor": {
+      "charging": {
+        "name": "Charging"
+      },
+      "discharging": {
+        "name": "Discharging"
+      },
+      "controller_active": {
+        "name": "Controller active"
+      },
+      "current_reduction": {
+        "name": "Current reduction"
+      },
+      "aes_active": {
+        "name": "AES active"
+      }
+    }
+  }
+}
