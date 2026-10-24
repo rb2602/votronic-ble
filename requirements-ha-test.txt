@@ -4,5 +4,5 @@
 # version, and Renovate proposes every stable Home Assistant release. The
 # plugin stays unpinned on purpose: its releases for betas look like
 # ordinary versions, so Renovate would propose them.
-homeassistant==2026.10.2
+homeassistant==2026.10.4
 pytest-homeassistant-custom-component
