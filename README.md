@@ -14,6 +14,11 @@ protocol comes from
 - Live values of the solar charger and the battery computer
 - Installation and updates through HACS
 
+## Screenshots
+
+![Sensors of the solar charger](https://raw.githubusercontent.com/rb2602/votronic-ble/main/docs/images/solar-charger-sensors.png)
+![Diagnostic entities of the solar charger](https://raw.githubusercontent.com/rb2602/votronic-ble/main/docs/images/solar-charger-diagnostic.png)
+
 ## Supported devices
 
 Tested: Bluetooth Connector S-BC with a Votronic MPP solar charger.
