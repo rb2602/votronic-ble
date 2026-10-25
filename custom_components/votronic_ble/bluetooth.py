@@ -21,6 +21,7 @@ from .const import (
     CHAR_SOLAR_CHARGER_UUID,
     DATA_TIMEOUT_SECONDS,
     DEFAULT_RECONNECT_SECONDS,
+    DOMAIN,
 )
 from .parser import (
     FrameType,
@@ -183,8 +184,9 @@ class VotronicBluetoothDevice:
                     DEFAULT_RECONNECT_SECONDS,
                 )
                 self._connect_failure_logged = True
-            self._client = None
-            if client is not None:
+            # A client that _handle_disconnect already cleared is closed there.
+            if client is not None and self._client is client:
+                self._client = None
                 with suppress(BleakError, asyncio.TimeoutError):
                     await client.disconnect()
             self._schedule_reconnect()
@@ -198,10 +200,13 @@ class VotronicBluetoothDevice:
             return
 
         if self._client is not client or not client.is_connected:
-            # The connection dropped during start_notify; _handle_disconnect
-            # may already have cleared the client and scheduled the reconnect.
+            # The connection dropped during start_notify. If _handle_disconnect
+            # already ran, it cleared and closed the client and scheduled the
+            # reconnect; otherwise it will ignore the client as stale.
             _LOGGER.debug("Votronic device %s disconnected while subscribing", self.address)
-            self._client = None
+            if self._client is client:
+                self._client = None
+                await self._async_close(client)
             self._schedule_reconnect()
             return
 
@@ -224,7 +229,21 @@ class VotronicBluetoothDevice:
             return
         self._set_connected(False)
         self._client = None
+        self.hass.async_create_background_task(
+            self._async_close(client), f"{DOMAIN} close {self.address}"
+        )
         self._schedule_reconnect()
+
+    async def _async_close(self, client: BleakClientWithServiceCache) -> None:
+        """Close a client whose connection was lost.
+
+        bleak keeps the D-Bus connection of such a client open until
+        disconnect() is called, and BlueZ enables its notifications again on
+        the next connection, so that every frame would arrive twice.
+        """
+
+        with suppress(BleakError, asyncio.TimeoutError):
+            await client.disconnect()
 
     @callback
     def _schedule_reconnect(self) -> None:
