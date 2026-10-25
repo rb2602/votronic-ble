@@ -78,12 +78,15 @@ async def test_reconnects_after_disconnect(hass: HomeAssistant, ble_device) -> N
         device = entry.runtime_data
 
         connect.call_args.kwargs["disconnected_callback"](first)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         assert not device.connected
+        # Closed, so that BlueZ does not deliver its notifications again.
+        first.disconnect.assert_awaited_once()
 
         await _wait_for_reconnects(hass, 1)
     assert device.connected
     assert connect.await_count == 2
+    second.disconnect.assert_not_awaited()
 
 
 async def test_disconnect_between_subscriptions(hass: HomeAssistant, ble_device) -> None:
@@ -109,6 +112,56 @@ async def test_disconnect_between_subscriptions(hass: HomeAssistant, ble_device)
         await _wait_for_reconnects(hass, 1)
     assert device.connected
     assert connect.await_count == 2
+    first.disconnect.assert_awaited_once()
+
+
+async def test_disconnect_callback_after_subscriptions(hass: HomeAssistant, ble_device) -> None:
+    entry = make_entry(1)
+    entry.add_to_hass(hass)
+    first, second = make_client(), make_client()
+    connect = AsyncMock(side_effect=[first, second])
+
+    async def drop_without_callback(_uuid: str, _callback) -> None:
+        first.is_connected = False
+
+    first.start_notify.side_effect = drop_without_callback
+    with patch(f"{BLUETOOTH}.establish_connection", connect):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        device = entry.runtime_data
+        assert not device.connected
+
+        # The callback arrives after the subscriptions and is ignored.
+        connect.call_args.kwargs["disconnected_callback"](first)
+        await hass.async_block_till_done(wait_background_tasks=True)
+
+        await _wait_for_reconnects(hass, 1)
+    assert device.connected
+    first.disconnect.assert_awaited_once()
+
+
+async def test_disconnect_during_failed_subscription(hass: HomeAssistant, ble_device) -> None:
+    entry = make_entry(1)
+    entry.add_to_hass(hass)
+    first, second = make_client(), make_client()
+    connect = AsyncMock(side_effect=[first, second])
+
+    async def drop_and_fail(_uuid: str, _callback) -> None:
+        first.is_connected = False
+        connect.call_args.kwargs["disconnected_callback"](first)
+        await asyncio.sleep(0)  # The disconnect is handled before the error.
+        raise BleakError("disconnected")
+
+    first.start_notify.side_effect = drop_and_fail
+    with patch(f"{BLUETOOTH}.establish_connection", connect):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        device = entry.runtime_data
+        assert not device.connected
+
+        await _wait_for_reconnects(hass, 1)
+    assert device.connected
+    first.disconnect.assert_awaited_once()
 
 
 async def test_ignores_disconnect_of_replaced_client(hass: HomeAssistant, ble_device) -> None:
