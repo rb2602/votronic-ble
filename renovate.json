@@ -5,7 +5,10 @@
   "timezone": "Europe/Zurich",
   "schedule": ["on saturday"],
   "prHourlyLimit": 0,
+  "rebaseWhen": "behind-base-branch",
   "osvVulnerabilityAlerts": true,
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "automergeStrategy": "squash",
   "labels": ["dependencies"],
   "pre-commit": {
     "enabled": true
@@ -48,6 +51,22 @@
       "description": "Tools pinned for CI and in .pre-commit-config.yaml move in one pull request so hook and CI cannot disagree, see docs/development.md.",
       "groupName": "Ruff",
       "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"]
+    },
+    {
+      "description": "Low-risk updates merge themselves once CI passes: action digests, Python patches and Ruff. Not the upstream commits, which are digests too but a review task.",
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["digest"],
+      "automerge": true
+    },
+    {
+      "matchDepNames": ["python"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "matchPackageNames": ["ruff", "astral-sh/ruff-pre-commit"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
     },
     {
       "groupName": "gitleaks",

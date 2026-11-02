@@ -92,6 +92,12 @@ Renovate, configured in `renovate.json`:
 - New pull requests open on Saturdays; others wait in the
   `Dependency Dashboard` issue.
 - Major updates need a tick in the dashboard.
+- Open pull requests are rebased onto `main` when it moves, so they can be
+  merged one after another without `Update branch`.
+- Digests of the actions, Python patches and Ruff merge themselves once CI
+  passes.
+- The dashboard lists every known vulnerability of a detected dependency,
+  also those without a fixed version.
 - Python follows Home Assistant: only patches of the minor version in
   `ci.yml` come. When the latest Home Assistant release raises its minimum
   Python version, a pull request updates `Needs Python … or newer` above. For
