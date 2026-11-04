@@ -13,7 +13,7 @@ ruff format --check custom_components tests
 ### Home Assistant tests
 
 `tests/ha` runs the integration inside Home Assistant with
-[pytest-homeassistant-custom-component](https://github.com/MatthewFlamm/pytest-homeassistant-custom-component).
+[pytest-homeassistant](https://github.com/home-assistant/core/tree/dev/packages/pytest-homeassistant).
 Bluetooth and D-Bus are faked. Needs Python 3.14.2 or newer:
 
 ```bash
@@ -24,13 +24,13 @@ python3 -m venv .venv-ha
 ```
 
 - `requirements-ha-test.txt` pins only Home Assistant. pip picks the plugin
-  release made for it; the plugin stays unpinned because its releases for
-  betas look like normal versions.
-- For the minimum version, install `homeassistant==` the version in
-  `hacs.json` and `pytest-homeassistant-custom-component` instead of
-  `requirements-ha-test.txt`.
+  release made for it; the plugin stays unpinned because it releases betas
+  too.
 - `integration_requirements.py` prints the requirements of the Bluetooth
-  integration of Home Assistant.
+  integration of Home Assistant. The `bluetooth` extra of the plugin leaves
+  out dbus-fast outside Linux.
+- For the minimum version, install `pytest-homeassistant[bluetooth]==` the
+  version in `hacs.json` instead of `requirements-ha-test.txt`.
 - `tests/ha` is not a package, so `unittest` skips it.
 
 ## Pre-commit hooks
@@ -62,7 +62,7 @@ every Monday, because hassfest and HACS change their rules:
 ### Pinned tool versions
 
 The tools are pinned, Renovate proposes updates. Not pinned are
-pytest-homeassistant-custom-component, see above, and the validation images
+pytest-homeassistant, see above, and the validation images
 of hassfest and HACS, see below.
 
 | What | Pinned in | Also in `.pre-commit-config.yaml` |
@@ -137,10 +137,8 @@ comparison, then:
 
 ## Testing unreleased changes
 
-- Merged to `main`: in HACS, open `Votronic Bluetooth`, `Redownload`, choose `main`,
-  restart Home Assistant.
-- On a branch: copy `custom_components/votronic_ble` to
-  `/config/custom_components/votronic_ble` and restart Home Assistant.
+Copy `custom_components/votronic_ble` of the branch or of `main` to
+`/config/custom_components/votronic_ble` and restart Home Assistant.
 
 ## Releases
 
@@ -159,11 +157,12 @@ comparison, then:
 3. `release.yml` checks that the tag is on `main`, that GitHub verifies its
    signature and that it matches the manifest version, waits until CI of the
    tagged commit has passed, then creates the GitHub release. The
-   Marketplace and HACS then offer the update.
+   Marketplace then offers the update.
 
 ## Known limitations
 
-- Pairing, real Bluetooth Connectors and HACS are tested by hand only.
+- Pairing, real Bluetooth Connectors and the Marketplace are tested by hand
+  only.
 - Home Assistant versions between the minimum and the current one are not
   tested.
 - Bluetooth proxies are not supported, see `docs/pairing.md`.
