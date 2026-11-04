@@ -12,6 +12,9 @@
       "service_uuid": "d0cb6aa7-8548-46d0-99f8-2d02611e5270"
     }
   ],
+  "categories": [
+    "energy.solar_batteries"
+  ],
   "codeowners": [
     "@rb2602"
   ],

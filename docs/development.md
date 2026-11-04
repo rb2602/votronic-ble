@@ -158,8 +158,8 @@ comparison, then:
 
 3. `release.yml` checks that the tag is on `main`, that GitHub verifies its
    signature and that it matches the manifest version, waits until CI of the
-   tagged commit has passed, then creates the GitHub release. HACS then
-   offers the update.
+   tagged commit has passed, then creates the GitHub release. The
+   Marketplace and HACS then offer the update.
 
 ## Known limitations
 

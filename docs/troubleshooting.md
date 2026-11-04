@@ -1,8 +1,10 @@
 # Troubleshooting
 
-## Votronic Bluetooth is not found in HACS
+## Votronic Bluetooth is not found in the Marketplace or HACS
 
-Add the repository by hand, see [Installation](installation.md#install).
+Add it from its link, `https://github.com/rb2602/votronic-ble`: in the
+Marketplace with `Add from link`, in HACS with `Custom repositories` and type
+`Integration`.
 
 ## Votronic Bluetooth is missing when adding an integration
 
@@ -44,7 +46,8 @@ Remove the existing `Votronic Bluetooth` entry first.
 
 ## No update is offered
 
-In HACS, open `Votronic Bluetooth` and select `Update information` in the menu.
+The Marketplace checks for new versions every 6 hours. In HACS, open
+`Votronic Bluetooth` and select `Update information` in the menu.
 
 ## The old version is still running
 
