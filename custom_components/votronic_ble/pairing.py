@@ -153,8 +153,6 @@ async def _call(
             return await bus.call(message)
     except TimeoutError as err:
         raise PairingError(f"No answer to {member} within {timeout} seconds") from err
-    # dbus-fast 4, which Home Assistant 2026.5 ships, has no common base class
-    # for its errors.
     except (EOFError, OSError, ValueError, DBusError) as err:
         raise PairingError(f"{member} failed: {err!r}") from err
 
