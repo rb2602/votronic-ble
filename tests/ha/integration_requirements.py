@@ -1,12 +1,4 @@
-"""Print the Python requirements of the Home Assistant integrations Votronic uses.
-
-The homeassistant package does not install the requirements of its built-in
-integrations; Home Assistant installs them at runtime. The tests need those
-of bluetooth and the integrations it depends on, in the versions the
-installed Home Assistant pins in their manifests:
-
-    pip install $(python tests/ha/integration_requirements.py)
-"""
+"""Print the requirements of the Bluetooth integration of the installed Home Assistant."""
 
 from __future__ import annotations
 
@@ -38,14 +30,6 @@ def requirements() -> list[str]:
         manifest = _manifest(domain)
         found.update(manifest.get("requirements", []))
         pending.extend(manifest.get("dependencies", []))
-    if "usb" in seen:
-        # usb imports aioesphomeapi through serialx in some releases, e.g.
-        # 2026.5, without declaring it; take the version esphome pins.
-        found.update(
-            requirement
-            for requirement in _manifest("esphome")["requirements"]
-            if requirement.startswith("aioesphomeapi")
-        )
     return sorted(found)
 
 

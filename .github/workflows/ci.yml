@@ -1,11 +1,4 @@
-# Runs on every push to main, on every pull request and weekly, because
-# hassfest and HACS change their rules; for a pull request GitHub tests the
-# merge result with the current main. The check jobs except
-# hassfest and hacs also run locally, see docs/development.md. Actions are
-# pinned to commits, the runner, Python and the tools to exact versions, and
-# Renovate proposes upgrades as pull requests; what the pins do and do not
-# fix is described in "Pinned tool versions" and "Dependency updates" in
-# docs/development.md.
+# See "Continuous integration" in docs/development.md.
 name: CI
 
 on:
@@ -54,14 +47,9 @@ jobs:
       - run: pip install --quiet -r requirements-dev.txt
       - run: ruff check custom_components tests
       - run: ruff format --check custom_components tests
-      # Parses every YAML file and rejects duplicate keys; needs PyYAML, which
-      # the test job does not install.
+      # Needs PyYAML.
       - run: python -m unittest -v tests.test_config_files
 
-  # Runs the integration inside Home Assistant, see "Home Assistant tests" in
-  # docs/development.md: at the minimum version in hacs.json and at the
-  # version requirements-ha-test.txt pins. The requirements of its Bluetooth
-  # integration come from its manifests.
   ha-test:
     runs-on: ubuntu-26.04
     timeout-minutes: 15
@@ -86,19 +74,15 @@ jobs:
         run: |
           if [ "$HOMEASSISTANT" = minimum ]; then
             version=$(python -c 'import json; print(json.load(open("hacs.json"))["homeassistant"])')
-            pip install --quiet "homeassistant==$version" pytest-homeassistant-custom-component
+            pip install --quiet "pytest-homeassistant[bluetooth]==$version"
           else
             pip install --quiet -r requirements-ha-test.txt
           fi
-      # The script prints several requirements, split into words on purpose.
       - run: |
           # shellcheck disable=SC2046
           pip install --quiet $(python tests/ha/integration_requirements.py)
       - run: python -m pytest
 
-  # Scans the whole git history for leaked credentials, not only the pushed
-  # commits, so a secret in an old commit fails the run too. The same tool
-  # runs on staged changes before every commit, see .pre-commit-config.yaml.
   secrets:
     runs-on: ubuntu-26.04
     timeout-minutes: 15
@@ -108,8 +92,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - uses: docker://zricethezav/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
-        # The container runs as root on a checkout owned by the runner user,
-        # which git refuses without this exception.
+        # The container runs as root on a checkout owned by the runner user.
         env:
           GIT_CONFIG_COUNT: "1"
           GIT_CONFIG_KEY_0: safe.directory
@@ -126,8 +109,6 @@ jobs:
           persist-credentials: false
       - uses: home-assistant/actions/hassfest@86d4564712fa02543c808e3a693dd04f9d3f8361 # master
 
-  # Validates the repository as HACS does, through the GitHub API; it needs
-  # no checkout.
   hacs:
     runs-on: ubuntu-26.04
     timeout-minutes: 15

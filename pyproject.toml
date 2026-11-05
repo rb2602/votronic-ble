@@ -1,9 +1,9 @@
-# Home Assistant tests in tests/ha, see "Home Assistant tests" in
-# docs/development.md. The other tests use unittest.
 [tool.pytest.ini_options]
 testpaths = ["tests/ha"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
+addopts = "-p no:respx"
+pythonpath = ["."]
 
 [tool.ruff]
 target-version = "py314"

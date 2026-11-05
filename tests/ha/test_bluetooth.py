@@ -11,7 +11,7 @@ from bleak import BleakError
 from homeassistant.core import HomeAssistant
 from homeassistant.util import dt as dt_util
 import pytest
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 
 from custom_components.votronic_ble.const import (
     CHAR_BATTERY_COMPUTER_UUID,

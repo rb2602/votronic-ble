@@ -1,12 +1,12 @@
 # Troubleshooting
 
-## Votronic Bluetooth is not found in HACS
+## Votronic Bluetooth is not found in the Marketplace
 
-Add the repository by hand, see [Installation](installation.md#install).
+Add it with `Add from link` and `https://github.com/rb2602/votronic-ble`.
 
 ## Votronic Bluetooth is missing when adding an integration
 
-Restart Home Assistant after the download. The folder must be
+After a copy by hand, restart Home Assistant. The folder must be
 `/config/custom_components/votronic_ble`.
 
 ## No device is found
@@ -44,7 +44,7 @@ Remove the existing `Votronic Bluetooth` entry first.
 
 ## No update is offered
 
-In HACS, open `Votronic Bluetooth` and select `Update information` in the menu.
+The Marketplace checks for new versions every 6 hours.
 
 ## The old version is still running
 

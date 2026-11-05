@@ -1,6 +1,4 @@
-# Creates the GitHub release for a pushed tag vX.Y.Z with the tag message as
-# release notes. HACS offers releases, not tags. See "Releases" in
-# docs/development.md.
+# See "Releases" in docs/development.md.
 name: Release
 
 on:

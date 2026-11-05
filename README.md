@@ -12,7 +12,7 @@ protocol comes from
 - Bluetooth discovery and setup in the Home Assistant UI
 - Pairing with the default or your own pairing code
 - Live values of the solar charger and the battery computer
-- Installation and updates through HACS
+- Installation and updates through the Marketplace of Home Assistant
 
 ## Screenshots
 
@@ -29,8 +29,7 @@ welcome.
 
 ## Requirements
 
-- Home Assistant 2026.5 or newer
-- [HACS](https://hacs.xyz)
+- Home Assistant 2026.11 or newer
 - A Bluetooth adapter of the Home Assistant host in range of the Bluetooth
   Connector. Bluetooth proxies are not supported.
 
