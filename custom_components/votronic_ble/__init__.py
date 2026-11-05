@@ -29,9 +29,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: VotronicConfigEntry) -> 
     )
     entry.runtime_data = device
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-    # The first connection can take long, e.g. while a phone is connected to
-    # the connector, and must not hold up the start of Home Assistant. Home
-    # Assistant cancels the task when the entry is unloaded.
+    # The first connection can take long and must not hold up the start.
     entry.async_create_background_task(
         hass, device.async_start(), f"{DOMAIN} connect {device.address}"
     )
@@ -48,10 +46,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: VotronicConfigEntry) ->
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: VotronicConfigEntry) -> None:
-    """Remove the pairing of this host with the connector, see pairing.py.
-
-    Best effort: a failure is logged and the entry is removed anyway.
-    """
+    """Remove the pairing of this host with the connector; a failure is only logged."""
 
     address = entry.data[CONF_ADDRESS]
     try:

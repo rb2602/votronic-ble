@@ -62,11 +62,7 @@ def _agent_methods(agent: ServiceInterface) -> dict:
 
 
 class FakeBus:
-    """Records BlueZ calls; Pair lets the agent answer like BlueZ would.
-
-    A reply is a message, SILENT, an exception to raise, or a list of these
-    for consecutive calls, of which the last one repeats.
-    """
+    """Record BlueZ calls; a reply is a message, SILENT, an exception or a list of these."""
 
     def __init__(self, replies: dict | None = None, ask_passkey: bool = False) -> None:
         self.replies = replies or {}

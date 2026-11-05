@@ -1,10 +1,4 @@
-"""Duplicate keys in the JSON and YAML files of the repository.
-
-json and PyYAML silently keep the last of two equal keys, so a duplicate in
-the manifest, a translation or the CI configuration would go unnoticed. The
-YAML part needs PyYAML and is skipped without it; CI runs it in the lint
-job.
-"""
+"""Duplicate keys in the JSON and YAML files, which json and PyYAML accept silently."""
 
 from __future__ import annotations
 

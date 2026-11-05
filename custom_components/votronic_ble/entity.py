@@ -34,10 +34,7 @@ def async_add_entities_per_frame(
     factory: Callable[[VotronicBluetoothDevice, Any], Entity],
     async_add_entities: AddEntitiesCallback,
 ) -> Callable[[], None]:
-    """Create entities as soon as a frame of their type has been received.
-
-    Returns the unsubscribe callback for the device listener.
-    """
+    """Create entities with the first frame of their type; return the unsubscribe callback."""
 
     pending = list(descriptions)
 
@@ -73,8 +70,7 @@ class VotronicEntity(Entity):
     def available(self) -> bool:
         """Return if the entity is available."""
 
-        # A current frame without the value, e.g. the controller temperature
-        # in standby, makes the state unknown, not unavailable.
+        # A current frame without the value makes the state unknown, not unavailable.
         return self._device.connected and self._device.is_current(self._key)
 
     async def async_added_to_hass(self) -> None:

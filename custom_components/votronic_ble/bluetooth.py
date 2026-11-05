@@ -49,20 +49,17 @@ class VotronicBluetoothDevice:
         self.name = name
 
         self._client: BleakClientWithServiceCache | None = None
-        # Serializes start and reconnect attempts so two connections are
-        # never established at the same time.
+        # Serializes start and reconnect attempts.
         self._connect_lock = asyncio.Lock()
         self._connected = False
         self._closing = False
         self._reconnect_cancel: CALLBACK_TYPE | None = None
-        # Set after the first failed connect of an outage, so a device that
-        # stays out of reach logs one warning, not one per reconnect attempt.
+        # Set after the first failed connect, to warn once per outage.
         self._connect_failure_logged = False
         self._listeners: set[Callable[[], None]] = set()
         self._values: dict[str, Any] = {}
         self.seen_frame_types: set[FrameType] = set()
-        # When the last frame of each type arrived on the current connection,
-        # and the types without a frame for DATA_TIMEOUT, see is_current.
+        # Arrival of the last frame per type on this connection, see is_current.
         self._frame_times: dict[FrameType, datetime] = {}
         self._stale_frame_types: set[FrameType] = set()
         self._stale_check_cancel: CALLBACK_TYPE | None = None
@@ -160,8 +157,7 @@ class VotronicBluetoothDevice:
                 self.name,
                 disconnected_callback=self._disconnected,
             )
-            # Publish the client before subscribing so a disconnect during
-            # start_notify is attributed to this connection.
+            # Set before subscribing, so a disconnect during start_notify belongs to it.
             self._client = client
             services = client.services
             subscribed = False
@@ -200,9 +196,7 @@ class VotronicBluetoothDevice:
             return
 
         if self._client is not client or not client.is_connected:
-            # The connection dropped during start_notify. If _handle_disconnect
-            # already ran, it cleared and closed the client and scheduled the
-            # reconnect; otherwise it will ignore the client as stale.
+            # Dropped during start_notify; _handle_disconnect may have cleared it already.
             _LOGGER.debug("Votronic device %s disconnected while subscribing", self.address)
             if self._client is client:
                 self._client = None
@@ -223,8 +217,7 @@ class VotronicBluetoothDevice:
     @callback
     def _handle_disconnect(self, client: BleakClientWithServiceCache) -> None:
         if client is not self._client:
-            # A late callback from a connection that was already replaced or
-            # closed. Acting on it would tear down the current connection.
+            # A late callback of a replaced or closed connection.
             _LOGGER.debug("Ignoring disconnect of a stale client for %s", self.address)
             return
         self._set_connected(False)
@@ -235,12 +228,7 @@ class VotronicBluetoothDevice:
         self._schedule_reconnect()
 
     async def _async_close(self, client: BleakClientWithServiceCache) -> None:
-        """Close a client whose connection was lost.
-
-        bleak keeps the D-Bus connection of such a client open until
-        disconnect() is called, and BlueZ enables its notifications again on
-        the next connection, so that every frame would arrive twice.
-        """
+        """Close a lost client, or BlueZ delivers every frame twice after the reconnect."""
 
         with suppress(BleakError, asyncio.TimeoutError):
             await client.disconnect()
@@ -321,8 +309,6 @@ class VotronicBluetoothDevice:
 
     @callback
     def _notify_listeners(self) -> None:
-        # Iterate over a snapshot: a listener may add entities, and Home
-        # Assistant starts that task eagerly, so their async_added_to_hass
-        # subscribes new listeners while this loop is still running.
+        # A snapshot, because new entities subscribe listeners during the loop.
         for listener in list(self._listeners):
             listener()

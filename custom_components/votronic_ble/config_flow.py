@@ -43,11 +43,7 @@ PAIRING_CODE_PATTERN = re.compile(r"\d{6}")
 
 
 def _device_name(address: str) -> str:
-    """Return the device name, e.g. Votronic S-BC EEFF for AA:BB:CC:DD:EE:FF.
-
-    The connector reports "Votronic" or, once BlueZ has read its GATT name,
-    "Energy Monitor EEFF"; a name from the address does not change.
-    """
+    """Return a name from the address, e.g. Votronic S-BC EEFF; the reported name changes."""
 
     return f"{DEVICE_NAME_PREFIX} {address.replace(':', '')[-4:].upper()}"
 
@@ -107,12 +103,7 @@ async def _validate_pairing(
 
 
 async def _pair(client: BleakClientWithServiceCache, ble_device, pairing_code: int) -> None:
-    """Pair through BlueZ with the pairing code, see pairing.py.
-
-    A device behind a Bluetooth proxy falls back to the pairing of its
-    backend, which cannot enter a pairing code. A backend without pairing
-    fails too: without a pairing the Bluetooth Connector sends no data.
-    """
+    """Pair through BlueZ with the pairing code, see pairing.py."""
 
     try:
         await async_pair(ble_device, pairing_code)

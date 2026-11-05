@@ -1,9 +1,4 @@
-"""Helpers shared by the Home Assistant tests.
-
-tests/ha is not a package, so that the unittest run in CI does not collect
-these tests; pytest puts this folder on sys.path, and the tests import this
-module as helpers.
-"""
+"""Helpers shared by the Home Assistant tests."""
 
 from __future__ import annotations
 

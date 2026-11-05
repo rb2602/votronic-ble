@@ -1,20 +1,4 @@
-"""Pairing with the Votronic Bluetooth Connector through BlueZ.
-
-The Bluetooth Connector bonds only while it is in pairing mode and asks for a
-six-digit passkey. bleak's pair() registers no BlueZ agent that could enter
-it, so pairing exports an agent on its own D-Bus connection and calls Pair()
-through that connection: BlueZ asks the agent of the caller. dbus-fast comes
-with the Bluetooth integration of Home Assistant.
-
-The connector advertises a public address without the "BR/EDR not supported"
-flag. BlueZ therefore treats a device it has not used before as dual mode and
-connects over BR/EDR, which fails; PreferredBearer le avoids that.
-
-An earlier pairing is removed before pairing: it may be stale, because the
-connector forgets its pairings when its Key button is held, and for a device
-paired over LE, Pair() would try BR/EDR and fail with a page timeout.
-Removing the config entry removes the pairing as well.
-"""
+"""Pairing with the Votronic Bluetooth Connector through BlueZ, see docs/development.md."""
 
 from __future__ import annotations
 
@@ -39,8 +23,7 @@ AGENT_PATH = "/org/homeassistant/votronic/pairing_agent"
 # Every D-Bus call has a timeout, so a hanging bluetoothd cannot block setup.
 DBUS_TIMEOUT_SECONDS = 10
 PAIR_TIMEOUT_SECONDS = 30
-# How long BlueZ may take to see the connector again after its pairing was
-# removed; the connector advertises while it is in pairing mode.
+# How long BlueZ may take to find the connector again after removing its pairing.
 REAPPEAR_TIMEOUT_SECONDS = 30
 REAPPEAR_POLL_SECONDS = 0.5
 
@@ -134,10 +117,7 @@ async def _call(
     body: list[Any] | None = None,
     timeout: float | None = None,
 ) -> Message:
-    """Call BlueZ; no answer or a lost connection raises PairingError.
-
-    BlueZ errors come back as a reply of type ERROR.
-    """
+    """Call BlueZ; no answer or a lost connection raises PairingError."""
 
     timeout = DBUS_TIMEOUT_SECONDS if timeout is None else timeout
     message = Message(
@@ -190,11 +170,7 @@ async def _is_known(bus: MessageBus, path: str) -> bool:
 
 
 async def async_remove_pairings(address: str) -> list[str]:
-    """Remove every pairing of a Bluetooth adapter of this host with address.
-
-    Returns the BlueZ paths of the removed devices. Raises PairingUnavailable
-    without access to the system D-Bus and PairingError when BlueZ fails.
-    """
+    """Remove every pairing of a host adapter with address; return the BlueZ paths."""
 
     async with _system_bus() as bus:
         paired = await _paired_devices(bus, address)
@@ -207,14 +183,7 @@ async def async_remove_pairings(address: str) -> list[str]:
 
 
 async def async_reset_pairing(ble_device: BLEDevice) -> None:
-    """Remove an earlier pairing before pairing again, see the module docstring.
-
-    BlueZ forgets the device together with its pairing and finds it again
-    with its next advertisement; this waits for that, so that the connection
-    and Pair() that follow find it. Does nothing for a device behind a
-    Bluetooth proxy or without access to the system D-Bus. Raises PairingError
-    when BlueZ fails or does not find the device again.
-    """
+    """Remove an earlier pairing and wait until BlueZ finds the device again."""
 
     path = bluez_device_path(ble_device)
     if path is None:
@@ -238,11 +207,7 @@ async def async_reset_pairing(ble_device: BLEDevice) -> None:
 
 
 async def async_prefer_le(ble_device: BLEDevice) -> None:
-    """Make BlueZ connect the device over LE, see the module docstring.
-
-    Does nothing for a device behind a Bluetooth proxy or when BlueZ has no
-    PreferredBearer property.
-    """
+    """Make BlueZ connect the device over LE, see docs/development.md."""
 
     path = bluez_device_path(ble_device)
     if path is None:
@@ -265,15 +230,7 @@ async def async_prefer_le(ble_device: BLEDevice) -> None:
 
 
 async def async_pair(ble_device: BLEDevice, passkey: int) -> None:
-    """Pair through BlueZ and enter the passkey when the connector asks for it.
-
-    Expects no earlier pairing, see async_reset_pairing.
-
-    Raises PairingUnavailable for a device behind a Bluetooth proxy,
-    PairingNotAccepted when the connector refuses without asking for the
-    passkey, WrongPasskey when it rejects the passkey, and PairingError
-    otherwise.
-    """
+    """Pair through BlueZ and enter the passkey when the connector asks for it."""
 
     path = bluez_device_path(ble_device)
     if path is None:

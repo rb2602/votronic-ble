@@ -135,6 +135,22 @@ comparison, then:
 | Entity names | `strings.json` and `translations/*.json`; `en.json` equals `strings.json` |
 | New entities | also `docs/entities.md` |
 
+## Pairing through BlueZ
+
+- The Bluetooth Connector bonds only in pairing mode and asks for a six-digit
+  passkey. bleak's `pair()` registers no BlueZ agent, so `pairing.py` exports
+  one on its own D-Bus connection and calls `Pair()` through it; BlueZ asks
+  the agent of the caller.
+- The connector advertises a public address without the "BR/EDR not
+  supported" flag, so BlueZ connects a new device over BR/EDR, which fails.
+  `PreferredBearer` `le` avoids that.
+- An earlier pairing is removed first. It may be stale after `Key` was held,
+  and `Pair()` of a device paired over LE tries BR/EDR and fails with a page
+  timeout. Removing the config entry removes the pairing too.
+- After a lost connection, `bluetooth.py` closes the old client. bleak keeps
+  its D-Bus connection open until `disconnect()`, and BlueZ would deliver
+  every frame twice after the reconnect.
+
 ## Testing unreleased changes
 
 Copy `custom_components/votronic_ble` of the branch or of `main` to
