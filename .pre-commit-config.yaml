@@ -1,9 +1,4 @@
-# Local checks before every commit. Install once per clone with
-# `pre-commit install`, see docs/development.md. Versions match the pins
-# used by CI so the hooks and CI cannot disagree; see "Pinned tool versions"
-# in docs/development.md for how to upgrade them. Each hook is pinned to the
-# commit of its tag, so a moved tag cannot change it; the tag is in the
-# frozen comment.
+# See "Pre-commit hooks" and "Pinned tool versions" in docs/development.md.
 repos:
   - repo: https://github.com/gitleaks/gitleaks
     rev: 83d9cd684c87d95d656c1458ef04895a7f1cbd8e  # frozen: v8.30.1

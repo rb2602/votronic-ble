@@ -26,9 +26,7 @@ class VotronicFrameError(ValueError):
     """Raised when a Votronic frame cannot be decoded."""
 
 
-# Which value keys each frame type delivers. Entities are created only once a
-# frame of a matching type has been received, so a Bluetooth Connector without
-# a battery computer does not get battery entities.
+# Value keys per frame type; entities appear with the first frame of their type.
 FRAME_KEYS: dict[FrameType, frozenset[str]] = {
     FrameType.BATTERY_COMPUTER: frozenset(
         {
