@@ -1,3 +1,3 @@
 # See "Pinned tool versions" in docs/development.md.
-ruff==0.17.3
+ruff==0.17.4
 pyyaml==6.0.3
