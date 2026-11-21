@@ -118,7 +118,7 @@ Renovate, configured in `renovate.json`:
 The protocol comes from `components/votronic_ble` of
 [syssi/esphome-votronic](https://github.com/syssi/esphome-votronic).
 
-Last reviewed upstream commit: `e511a895ee16e4e3f6b4c0f0bc271b5745760d58`
+Last reviewed upstream commit: `7c10fa4d66cc016e7d487f5c997082c40bb435ea`
 
 Renovate opens a pull request when upstream `main` moves. Review the linked
 comparison, then:
